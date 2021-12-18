@@ -7,7 +7,9 @@ It is totally free and its code is open!
 
 TIPS															
 															
-* To use these functions in your own spreadsheet, copy to the latter the VBA modules named xlFOCUS and JsonConverter embedded in this spreadsheet.															
+* To use these functions in your own spreadsheet, copy to the latter the VBA modules named xlFOCUS and JsonConverter, both embedded in this spreadsheet.
+The JsonConverter module is part of the "VBA-JSON" project developed by Tim Hall and available at the website below. Tested on v2.3.1.
+https://github.com/VBA-tools/VBA-JSON								
 															
 * These functions rely on Excel's WEBSERVICE function (available from Excel 2013 onwards), which can be quite unstable. So, when designing your spreadsheet, remember to save it constantly.															
 															
