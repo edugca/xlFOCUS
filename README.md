@@ -1,4 +1,4 @@
-# xlFOCUS
+# xlFOCUS 0.1
 xlFOCUS: fetch BCB's FOCUS survey data to Excel
 
 This spreadsheet exposes examples of how to fetch data from the BCB's "Expectativas de Mercado" survey, also known as FOCUS.
