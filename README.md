@@ -14,7 +14,8 @@ https://github.com/VBA-tools/VBA-JSON
 															
 * These functions rely on Excel's WEBSERVICE function (available from Excel 2013 onwards), which can be quite unstable. So, when designing your spreadsheet, remember to save it constantly.															
 															
-* There is a function for each resource provided by the FOCUS's webservice. One can find the metadata on its webpage:															
+* There is a function for each resource provided by the FOCUS's webservice. One can find the metadata on its webpage:
+	
 https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/aplicacao#!/recursos															
 															
 * If your query is not working, try to build it on the webpage above.															
