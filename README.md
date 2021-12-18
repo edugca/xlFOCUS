@@ -16,10 +16,10 @@ https://github.com/VBA-tools/VBA-JSON
 															
 * There is a function for each resource provided by the FOCUS's webservice. One can find the metadata on its webpage:
 	
-https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/aplicacao#!/recursos															
-															
-* If your query is not working, try to build it on the webpage above.															
-															
+https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/aplicacao#!/recursos																		
+* If your query is not working, try to build it on the webpage above. If the server is down, then all functions will fail to fetch data!														
+* Beware that the FOCUS webservice is case sensitive, that is, "IPCA" works but "ipca" does not.
+
 * There are some known limitations. Basically, avoid returning much data in a single function call:															
 	* 9,999 is the maximum number of observations returned by each function call														
 	* 32,767 is the maximum number of characters of the JSON script returned by each function call														
