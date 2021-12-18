@@ -23,6 +23,6 @@ https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/aplicacao#!/recu
 * Beware that the FOCUS webservice is case sensitive, that is, "IPCA" works but "ipca" does not.
 
 * There are some known limitations. Basically, avoid returning much data in a single function call:															
-	* 9,999 is the maximum number of observations returned by each function call														
+	* 10,000 is the maximum number of observations returned by each function call														
 	* 32,767 is the maximum number of characters of the JSON script returned by each function call														
 	* 2,048 is the maximum number of characters of the URL path accessed by each function call
