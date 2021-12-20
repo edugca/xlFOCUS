@@ -3,12 +3,13 @@ Attribute VB_Name = "xlFOCUS"
 '''
 ''' This module contains routines for fetching data from the BCB FOCUS webservice
 ''' For these routines to work, it requires VBA-JSON routines developed by Tim Hall and available at https://github.com/VBA-tools/VBA-JSON. Tested on v2.3.1.
-''' To put these resources to work on your own spreadsheet, copy this module and VBA-JSON's module named 'JsonConverter' to your spreadsheet
+''' To put these resources to work on your own spreadsheet, make a reference in your spreadsheet to the "Microsoft Scripting Runtime" library and
+''' copy this module and VBA-JSON's module named 'JsonConverter' to your spreadsheet
 '''
 ''' Available on:
 ''' Developed by Eduardo G. C. Amaral
-''' Version: 0.1
-''' Last update: 2021-12-18
+''' Version: 0.2
+''' Last update: 2021-12-19
 '''
 ''' It is intended to help researchers and the general public, so have fun, but use at your own risk!
 
@@ -393,6 +394,44 @@ result = Values
 Final:
 
 xlFOCUS_ReadJSON = result
+
+End Function
+
+Function xlFOCUS_ReadJSONFile(JsonFilePath As String, Optional showHeaders As Boolean = False, Optional Fields As Variant) As Variant
+
+Dim result As Variant
+Dim JsonText As String
+Dim FSO As New Scripting.FileSystemObject
+Dim FileToRead As Scripting.TextStream
+
+' Avoid recalculation when the function wizard is being used
+If (Not Application.CommandBars("Standard").Controls(1).Enabled) And recalculateWhenFunctionWizardIsOpen = False Then
+    xlFOCUS_ReadJSONFile = "# Barra de fórmulas aberta"
+    Exit Function
+End If
+
+Set FSO = CreateObject("Scripting.FileSystemObject")
+
+On Error Resume Next
+Set FileToRead = FSO.OpenTextFile(JsonFilePath, ForReading)
+If FileToRead Is Nothing Then
+    xlFOCUS_ReadJSONFile = "# Arquivo não localizado"
+    Exit Function
+End If
+On Error GoTo 0
+
+JsonText = FileToRead.ReadAll
+FileToRead.Close
+
+'Clear memory
+Set FSO = Nothing
+Set FileToRead = Nothing
+
+result = xlFOCUS_ReadJSON(JsonText, showHeaders, Fields)
+
+Final:
+
+xlFOCUS_ReadJSONFile = result
 
 End Function
 
