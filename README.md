@@ -51,7 +51,7 @@ SPI	https://olinda.bcb.gov.br/olinda/servico/SPI/versao/v1/aplicacao#!/recursos
 																		
 **Version history**																	
 																		
-v 0.1
+v 0.1 (2021-12-16)
 
 * First release.																		
 																		
