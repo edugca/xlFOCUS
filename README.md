@@ -1,4 +1,4 @@
-xlFOCUS (v. 0.3)																		
+**xlFOCUS (v. 0.3)**																		
 																		
 This spreadsheet exposes examples of how to fetch data from the BCB's webservices, including FOCUS (market expectations), SGS (economic indicators), SCR (credit data), and SPI (payments system).																		
 It is intended to be used by researchers and the general public. It is NOT a product of the BCB, nor it is maintained by that institution. Use at your own risk!																		
