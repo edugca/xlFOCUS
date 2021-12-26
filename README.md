@@ -1,10 +1,10 @@
-**xlFOCUS (v. 0.3)**																		
+# **xlFOCUS (v. 0.3)**																		
 																		
 This spreadsheet exposes examples of how to fetch data from the BCB's webservices, including FOCUS (market expectations), SGS (economic indicators), SCR (credit data), and SPI (payments system).																		
 It is intended to be used by researchers and the general public. It is NOT a product of the BCB, nor it is maintained by that institution. Use at your own risk!																		
 It is totally free and its code is open!																		
 																		
-TIPS																		
+## **TIPS**																		
 																		
 * Most recent version should be found in the webpage below:																		
 https://github.com/edugca/xlFOCUS																		
@@ -49,7 +49,7 @@ SPI	https://olinda.bcb.gov.br/olinda/servico/SPI/versao/v1/aplicacao#!/recursos
 	* 32,767 is the maximum number of characters of the JSON script returned by each function call																	
 	* 2,048 is the maximum number of characters of the URL path accessed by each function call																	
 																		
-**Version history**																	
+## **Version history**																	
 																		
 v 0.1 (2021-12-16)
 
