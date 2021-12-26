@@ -51,14 +51,17 @@ SPI	https://olinda.bcb.gov.br/olinda/servico/SPI/versao/v1/aplicacao#!/recursos
 																		
 * Version history																		
 																		
-v 0.1																		
+v 0.1
+
 First release.																		
 																		
-v 0.2 (2021-12-19)																		
+v 0.2 (2021-12-19)
+
 More instructions on how to implement these resources on the user's spreadsheet.																		
 New function to read JSON files: xlFOCUS_readJSONFile.																		
 																		
-v 0.3 (2021-12-26)																		
+v 0.3 (2021-12-26)
+
 Fixed the encoding of the text read by the function xlFOCUS_ReadJSONFile. Now, it is correctly set to UTF-8.																		
 New function to get data from the SGS system: xlFOCUS_SGS.																		
 New function to read JSON script returned from the SGS system: xlFOCUS_SGS_ReadJSON.																		
