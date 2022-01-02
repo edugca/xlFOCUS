@@ -1,4 +1,4 @@
-# **xlFOCUS (v. 0.4)**																		
+# **xlFOCUS (v. 0.41)**																		
 																		
 This spreadsheet exposes examples of how to fetch data from economic data webservices, including FOCUS (market expectations), SGS and ipeadata (economic indicators), SCR (credit data), SPI (payments system), and more.																		
 It is intended to be used by researchers and the general public. It is NOT a product of the BCB, nor it is maintained by that institution. Use at your own risk!																		
@@ -89,3 +89,7 @@ v 0.4 (2022-01-01)
 * New function to get JSON data from the ipeadata webservice: xlFOCUS_ipeadata_ReadJSON.
 * New function to get JSON data from the MercadoImobiliario webservice of the BCB: xlFOCUS_MercadoImobiliario.
 * New function to get data from the SCR system: xlFOCUS_SCR_TaxasDeJurosMensal.
+
+v 0.41 (2022-01-01)
+
+* In the presence of old dates (< 1900-01-01), ipeadata functions return dates formatted as text 'yyyy-MM-dd'.
