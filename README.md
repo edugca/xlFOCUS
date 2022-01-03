@@ -1,6 +1,6 @@
 # **xlFOCUS (v. 0.41)**																		
 																		
-This spreadsheet exposes examples of how to fetch data from economic data webservices, including FOCUS (market expectations), SGS and ipeadata (economic indicators), SCR (credit data), SPI (payments system), and more.																		
+This spreadsheet exposes examples of how to fetch Brazil economic data from webservices to Excel, including FOCUS (market expectations), SGS and ipeadata (economic indicators), SCR (credit data), SPI (payments system), and more.																		
 It is intended to be used by researchers and the general public. It is NOT a product of the BCB, nor it is maintained by that institution. Use at your own risk!																		
 It is totally free and its code is open!																		
 																		
