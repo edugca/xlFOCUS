@@ -1,4 +1,4 @@
-# **xlFOCUS (v. 0.41)**																		
+# **xlFOCUS (v. 0.4.1)**																		
 																		
 This spreadsheet exposes examples of how to fetch Brazil economic data from webservices to Excel, including FOCUS (market expectations), SGS and ipeadata (economic indicators), SCR (credit data), SPI (payments system), and more.																		
 It is intended to be used by researchers and the general public. It is NOT a product of the Brazilian Central Bank nor of any other government institution. Use at your own risk!																		
@@ -90,6 +90,6 @@ v 0.4 (2022-01-01)
 * New function to get JSON data from the MercadoImobiliario webservice of the BCB: xlFOCUS_MercadoImobiliario.
 * New function to get data from the SCR system: xlFOCUS_SCR_TaxasDeJurosMensal.
 
-v 0.41 (2022-01-01)
+v 0.4.1 (2022-01-01)
 
 * In the presence of old dates (< 1900-01-01), ipeadata functions return dates formatted as text 'yyyy-MM-dd'.
