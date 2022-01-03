@@ -8,7 +8,7 @@ Attribute VB_Name = "xlFOCUS"
 '''
 ''' Available on:
 ''' Developed by Eduardo G. C. Amaral
-''' Version: 0.4
+''' Version: 0.41
 ''' Last update: 2022-01-01
 '''
 ''' It is intended to help researchers and the general public, so have fun, but use at your own risk!
@@ -146,6 +146,7 @@ Dim allPeriods As Long
 Dim nCols As Long
 Dim listMatches As Variant
 Dim colNIVNOME As Long, colTERCODIGO As Long
+Dim oldDates As Boolean
 
 ' Avoid recalculation when the function wizard is being used
 If (Not Application.CommandBars("Standard").Controls(1).Enabled) And recalculateWhenFunctionWizardIsOpen = False Then
@@ -248,18 +249,22 @@ If colData > -1 Then
 End If
 
 'Slice dates
-If datesVector(1) >= CDbl(DataInicial) Or Len(DataInicial_str) = 0 Then
+If Len(DataInicial_str) = 0 Then
+    minDateIdx = 1
+ElseIf datesVector(1) >= DateValue(DataInicial_str) Then
     minDateIdx = 1
 Else
-    minDateIdx = Application.WorksheetFunction.Match(CDbl(DataInicial), datesVector, 1)
-    If CDbl(DataInicial) > datesVector(minDateIdx) Then
+    minDateIdx = Application.WorksheetFunction.Match(CLng(DateValue(DataInicial_str)), datesVector, 1)
+    If CLng(DateValue(DataInicial_str)) > datesVector(minDateIdx) Then
         minDateIdx = minDateIdx + 1
     End If
 End If
-If datesVector(UBound(datesVector)) <= CDbl(DataFinal) Or CDbl(DataFinal) = 0 Then
+If Len(DataFinal_str) = 0 Then
+    maxDateIdx = UBound(datesVector)
+ElseIf datesVector(UBound(datesVector)) <= CLng(DateValue(DataFinal_str)) Then
     maxDateIdx = UBound(datesVector)
 Else
-    maxDateIdx = Application.WorksheetFunction.Match(CDbl(DataFinal), datesVector, 1)
+    maxDateIdx = Application.WorksheetFunction.Match(CLng(DateValue(DataFinal_str)), datesVector, 1)
 End If
 seqDates = Application.WorksheetFunction.Sequence(maxDateIdx - minDateIdx + 1, 1, minDateIdx)
 
@@ -300,6 +305,7 @@ If Len(nUltimos_str) > 0 Then
 End If
 
 'Format values
+oldDates = False
 If colData > 0 Then
     'Check whether it is a singleton
     If minDateIdx = maxDateIdx Then
@@ -307,7 +313,13 @@ If colData > 0 Then
     Else
         For iObs = 1 To UBound(result, 1)
             dateAux = Left$(result(iObs, colData), 10)
-            result(iObs, colData) = DateValue(dateAux)
+            'Check whether dates are older than Excel's first date
+            If oldDates = False And DateValue(dateAux) > DateValue("1900-01-01") Then
+                result(iObs, colData) = DateValue(dateAux)
+            Else
+                result(iObs, colData) = dateAux
+                oldDates = True
+            End If
         Next iObs
     End If
 End If
