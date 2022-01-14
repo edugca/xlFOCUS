@@ -8,8 +8,8 @@ Attribute VB_Name = "xlFOCUS"
 '''
 ''' Available on:
 ''' Developed by Eduardo G. C. Amaral
-''' Version: 0.41
-''' Last update: 2022-01-01
+''' Version: 0.5
+''' Last update: 2022-01-13
 '''
 ''' It is intended to help researchers and the general public, so have fun, but use at your own risk!
 '''
@@ -332,7 +332,7 @@ xlFOCUS_ipeadata = result
 End Function
 
 Function xlFOCUS_SGS(Codigo As Long, Optional DataInicial As Variant, Optional DataFinal As Variant, _
-    Optional nUltimos As Variant, Optional RetornarDatas As Variant) As Variant
+    Optional nUltimos As Variant = "", Optional RetornarDatas As Variant = False) As Variant
 
 Dim URL As String
 Dim jsonScript As String
@@ -747,7 +747,7 @@ jsonScript = xlFOCUS_WEBSERVICE(URL)
 ''''''''OLD METHOD
 'jsonScript = Application.WorksheetFunction.WebService(URL)
 
-result = xlFOCUS_ReadJSON(jsonScript, False, Campos)
+result = xlFOCUS_ReadJSON(jsonScript, False, Campos, "value")
 
 'Check returned values
 If VarType(result) = vbString Then
@@ -773,7 +773,7 @@ sistema_xlFOCUS_Expectativas = result
 
 End Function
 
-Function xlFOCUS_ReadJSON(JsonText As String, Optional showHeaders As Boolean = False, Optional Fields As Variant) As Variant
+Function xlFOCUS_ReadJSON(JsonText As String, Optional showHeaders As Boolean = False, Optional Fields As Variant = "", Optional subField As Variant) As Variant
 
 Dim result As Variant
 Dim Parsed As Object
@@ -781,14 +781,23 @@ Dim nCols As Long, jCol As Long
 Dim nameCols As Variant
 Dim Val As Variant
 Dim colNamesStart As Long
-Dim Value As Object
+Dim Value As Object, ValueVar As Variant
 Dim i As Long
 Dim Values As Variant
+Dim dicItems As Variant, dicKeys As Variant
+Dim iField As Variant
 
 ' Avoid recalculation when the function wizard is being used
 If (Not Application.CommandBars("Standard").Controls(1).Enabled) And recalculateWhenFunctionWizardIsOpen = False Then
     xlFOCUS_ReadJSON = "# Barra de fórmulas aberta"
     Exit Function
+End If
+
+'Force to be array
+If Not IsMissing(Fields) Then
+    If Not IsArray(Fields) Then
+        Fields = Array(Fields)
+    End If
 End If
 
 ' Parse json to Dictionary
@@ -797,15 +806,44 @@ End If
 Set Parsed = xlFOCUS_JsonConverter.ParseJson(JsonText)
 
 ' Check structure
-If Parsed("value").Count > 0 Then
-    nCols = Parsed("value")(1).Count - 1
-    nameCols = Parsed("value")(1).Keys
+If Not IsMissing(subField) Then
+    If IsArray(subField) Then
+        For Each iField In subField
+            If Parsed(iField).Count > 0 Then
+                Set Parsed = Parsed(iField)
+            Else
+                result = "# Consulta retornou vazia"
+                GoTo Final
+            End If
+        Next iField
+    Else
+        If Len(subField) > 0 Then
+            If Parsed(subField).Count > 0 Then
+                Set Parsed = Parsed(subField)
+            Else
+                result = "# Consulta retornou vazia"
+                GoTo Final
+            End If
+        End If
+    End If
+End If
+
+If Parsed.Count > 0 Then
+    'Check whether it is a collection or a dictionary
+    If TypeName(Parsed) = "Collection" Then
+        nCols = Parsed(1).Count - 1
+        nameCols = Parsed(1).Keys
+    Else
+        nCols = 1
+        nameCols = Array("1", "2")
+    End If
     
     If Not IsMissing(Fields) Then
         colNamesStart = LBound(Fields)
         If nCols + 1 <> (UBound(Fields) - LBound(Fields) + 1) Then
-            result = "# Ao menos um campo está errado"
-            GoTo Final
+            Fields = nameCols
+            'result = "# Ao menos um campo está errado"
+            'GoTo Final
         End If
     Else
         colNamesStart = 0
@@ -818,7 +856,7 @@ End If
 
 ' Prepare and write values to sheet
 If showHeaders Then
-    ReDim Values(Parsed("value").Count, nCols)
+    ReDim Values(Parsed.Count, nCols)
     i = 1
     
     'Fill in header
@@ -826,19 +864,35 @@ If showHeaders Then
         Values(0, jCol) = Fields(colNamesStart + jCol)
     Next jCol
 Else
-    ReDim Values(Parsed("value").Count - 1, nCols)
+    ReDim Values(Parsed.Count - 1, nCols)
     i = 0
 End If
 
-
-For Each Value In Parsed("value")
-    For jCol = 0 To nCols
-        Val = Value(Fields(colNamesStart + jCol))
+'Check whether it is a collection or a dictionary
+If TypeName(Parsed) = "Collection" Then
+    For Each Value In Parsed
+        For jCol = 0 To nCols
+            Val = Value(Fields(colNamesStart + jCol))
+            Val = IIf(IsNull(Val), "", Val)
+            Values(i, jCol) = Val
+        Next jCol
+        i = i + 1
+    Next Value
+Else
+    dicItems = Parsed.Items
+    dicKeys = Parsed.Keys
+    For Each ValueVar In dicItems
+        Val = dicKeys(i - CLng(showHeaders))
         Val = IIf(IsNull(Val), "", Val)
-        Values(i, jCol) = Val
-    Next jCol
-    i = i + 1
-Next Value
+        Values(i, 0) = Val
+        
+        Val = ValueVar
+        Val = IIf(IsNull(Val), "", Val)
+        Values(i, 1) = Val
+        
+        i = i + 1
+    Next ValueVar
+End If
 
 result = Values
 
@@ -997,7 +1051,7 @@ xlFOCUS_ipeadata_ReadJSON = result
 
 End Function
 
-Function xlFOCUS_ReadJSONFile(JsonFilePath As String, Optional showHeaders As Boolean = False, Optional Fields As Variant) As Variant
+Function xlFOCUS_ReadJSONFile(JsonFilePath As String, Optional showHeaders As Boolean = False, Optional Fields As Variant, Optional subField As String) As Variant
 
 Dim result As Variant
 Dim JsonText As String
@@ -1033,7 +1087,7 @@ End If
 
 JsonText = Read_UTF_8_Text_File(JsonFilePath)
 
-result = xlFOCUS_ReadJSON(JsonText, showHeaders, Fields)
+result = xlFOCUS_ReadJSON(JsonText, showHeaders, Fields, subField)
 
 Final:
 
@@ -1138,7 +1192,7 @@ jsonScript = xlFOCUS_WEBSERVICE(URL)
 ''''''''OLD METHOD
 'jsonScript = Application.WorksheetFunction.WebService(URL)
 
-result = xlFOCUS_ReadJSON(jsonScript, False, Campos)
+result = xlFOCUS_ReadJSON(jsonScript, False, Campos, "value")
 
 'Check returned values
 If VarType(result) = vbString Then
@@ -1218,7 +1272,7 @@ jsonScript = xlFOCUS_WEBSERVICE(URL)
 ''''''''OLD METHOD
 'jsonScript = Application.WorksheetFunction.WebService(URL)
 
-result = xlFOCUS_ReadJSON(jsonScript, False, Campos)
+result = xlFOCUS_ReadJSON(jsonScript, False, Campos, "value")
 
 'Check returned values
 If VarType(result) = vbString Then
@@ -1296,7 +1350,7 @@ jsonScript = xlFOCUS_WEBSERVICE(URL)
 ''''''''OLD METHOD
 'jsonScript = Application.WorksheetFunction.WebService(URL)
 
-result = xlFOCUS_ReadJSON(jsonScript, False, Campos)
+result = xlFOCUS_ReadJSON(jsonScript, False, Campos, "value")
 
 'Check returned values
 If VarType(result) = vbString Then
@@ -1392,7 +1446,7 @@ Set xmlhttp = Nothing
 
 End Function
 
-Function xlFOCUS_ReadJSONFromWEBSERVICE(URL As String, Optional showHeaders As Boolean = False, Optional Fields As Variant) As Variant
+Function xlFOCUS_ReadJSONFromWEBSERVICE(URL As String, Optional showHeaders As Boolean = False, Optional Fields As Variant, Optional subField As Variant) As Variant
 
 'This function circumvents the String size limitation when passing strings directly to Excel
 
@@ -1406,9 +1460,412 @@ xmlhttp.Send
 
 jsonScript = xmlhttp.responseText
 
-xlFOCUS_ReadJSONFromWEBSERVICE = xlFOCUS_ReadJSON(jsonScript, showHeaders, Fields)
+xlFOCUS_ReadJSONFromWEBSERVICE = xlFOCUS_ReadJSON(jsonScript, showHeaders, Fields, subField)
 
 'Clear memory
 Set xmlhttp = Nothing
+
+End Function
+
+Function xlFOCUS_IBGE_SIDRA(Optional Path As String, Optional Tabela As String, Optional Variavel As String, _
+    Optional Classificacao As String, Optional NivelTerritorial As String, Optional CampoData As String, _
+    Optional DataInicial As Variant = "", Optional DataFinal As Variant = "", _
+    Optional nUltimos As Variant = "", Optional RetornarDatas As Variant = False) As Variant
+
+' Details about the webservice:
+' https://apisidra.ibge.gov.br/
+
+Dim URL As String, URLMeta As String
+Dim jsonScript As String, jsonScriptMeta As String
+Dim pPath_str As String, Tabela_str As String, Variavel_str As String, NivelTerritorial_str As String, Classificacao_str As String
+Dim Campos As Variant
+Dim result As Variant, resultMeta As Variant
+Dim frequenciaStr As String
+
+' Avoid recalculation when the function wizard is being used
+If (Not Application.CommandBars("Standard").Controls(1).Enabled) And recalculateWhenFunctionWizardIsOpen = False Then
+    xlFOCUS_IBGE_SIDRA = "# Barra de fórmulas aberta"
+    Exit Function
+End If
+
+pPath_str = CStr(Path)
+Tabela_str = CStr(Tabela)
+Variavel_str = CStr(Variavel)
+NivelTerritorial_str = CStr(NivelTerritorial)
+Classificacao_str = CStr(Classificacao)
+
+'Check parameters consistency
+If Len(pPath_str) > 0 And _
+    (Len(Variavel_str) > 0 _
+    Or Len(NivelTerritorial_str) _
+    Or Len(Classificacao_str) > 0) Then
+
+    xlFOCUS_IBGE_SIDRA = "# Se Path é especificado, apenas Tabela precisa ser especificado"
+    Exit Function
+
+End If
+
+'Check URL
+'Return observations between dates
+If Len(pPath_str) > 0 Then
+    URL = "http://api.sidra.ibge.gov.br/values" _
+            & pPath_str _
+            & "/p/all" _
+            & "/f/a" _
+            & "/d/m" _
+            & "/h/n" _
+            & "?formato=json"
+Else
+    URL = "http://api.sidra.ibge.gov.br/values" _
+            & IIf(Len(Tabela_str) = 0, "", "/t/" & Tabela_str) _
+            & IIf(Len(Variavel_str) = 0, "", "/v/" & Variavel_str) _
+            & IIf(Len(Classificacao_str) = 0, "", "/" & Classificacao_str) _
+            & IIf(Len(NivelTerritorial_str) = 0, "", "/" & NivelTerritorial_str) _
+            & "/p/all" _
+            & "/f/a" _
+            & "/d/m" _
+            & "/h/n" _
+            & "?formato=json"
+End If
+
+URLMeta = "https://servicodados.ibge.gov.br/api/v3/agregados/" & Tabela_str & "/metadados"
+
+Campos = Array(CampoData, "V")
+
+'Fetch webservice
+jsonScript = xlFOCUS_WEBSERVICE(URL)
+jsonScriptMeta = xlFOCUS_WEBSERVICE(URLMeta)
+
+result = xlFOCUS_ReadJSON(jsonScript, False, Campos)
+resultMeta = xlFOCUS_ReadJSON(jsonScriptMeta, False, , "periodicidade")
+frequenciaStr = LCase(resultMeta(0, 1))
+
+
+xlFOCUS_IBGE_SIDRA = sistema_xlFOCUS_IBGE_SIDRA(result, frequenciaStr, Campos, CampoData, _
+    DataInicial, DataFinal, _
+    nUltimos, RetornarDatas)
+
+End Function
+
+Function xlFOCUS_IBGE_Agregados(Optional Tabela As String, Optional Variavel As String, _
+   Optional Classificacao As String, Optional lLocalidade As String, _
+    Optional DataInicial As Variant = "", Optional DataFinal As Variant = "", _
+    Optional nUltimos As Variant = "", Optional RetornarDatas As Variant = False) As Variant
+
+' Details about the webservice:
+' https://servicodados.ibge.gov.br/api/docs/agregados?versao=3
+
+Dim URL As String, URLMeta As String
+Dim jsonScript As String, jsonScriptMeta As String
+Dim Tabela_str As String, Variavel_str As String, lLocalidade_str As String, Classificacao_str As String
+Dim DataInicial_str As String, DataFinal_str As String, Periodos_str As String
+Dim Campos As Variant
+Dim result As Variant, resultMeta As Variant
+Dim frequenciaStr As String
+
+' Avoid recalculation when the function wizard is being used
+If (Not Application.CommandBars("Standard").Controls(1).Enabled) And recalculateWhenFunctionWizardIsOpen = False Then
+    xlFOCUS_IBGE_Agregados = "# Barra de fórmulas aberta"
+    Exit Function
+End If
+
+'Force range to be values
+DataInicial = DataInicial
+DataFinal = DataFinal
+If IsEmpty(DataInicial) Then: DataInicial = ""
+If IsEmpty(DataFinal) Then: DataFinal = ""
+
+Tabela_str = CStr(Tabela)
+Variavel_str = CStr(Variavel)
+lLocalidade_str = CStr(lLocalidade)
+Classificacao_str = CStr(Classificacao)
+
+'Check URL Metadata
+URLMeta = "https://servicodados.ibge.gov.br/api/v3/agregados/" & Tabela_str & "/metadados"
+
+Campos = Array("Data", "V")
+
+'Fetch metadata webservice
+jsonScriptMeta = xlFOCUS_WEBSERVICE(URLMeta)
+resultMeta = xlFOCUS_ReadJSON(jsonScriptMeta, False, , "periodicidade")
+frequenciaStr = LCase(resultMeta(0, 1))
+
+'Build periods expression
+If Len(DataInicial) = 0 Or Len(DataFinal) = 0 Then
+    Periodos_str = "all"
+Else
+    Select Case frequenciaStr
+        Case "anual":
+            DataInicial_str = Format(DataInicial, "yyyy")
+            DataFinal_str = Format(DataFinal, "yyyy")
+        Case "semestral":
+            DataInicial_str = Format(DateSerial(Year(DataInicial), 1, 1), "yyyy") & Format(IIf(Month(DataInicial) < 7, 1, 2), "00")
+            DataFinal_str = Format(DateSerial(Year(DataFinal), 1, 1), "yyyy") & Format(IIf(Month(DataFinal) < 7, 1, 2), "00")
+        Case "trimestral":
+            DataInicial_str = Format(DateSerial(Year(DataInicial), 1, 1), "yyyy") & Format(Application.WorksheetFunction.RoundUp(Month(DataInicial) / 3, 0), "00")
+            DataFinal_str = Format(DateSerial(Year(DataFinal), 1, 1), "yyyy") & Format(Application.WorksheetFunction.RoundUp(Month(DataFinal) / 3, 0), "00")
+        Case "mensal":
+            DataInicial_str = Format(DataInicial, "yyyymm")
+            DataFinal_str = Format(DataFinal, "yyyymm")
+        Case "trimestral móvel":
+            DataInicial_str = Format(DataInicial, "yyyymm")
+            DataFinal_str = Format(DataFinal, "yyyymm")
+    End Select
+    
+    'Check whether dates are the same
+    Periodos_str = DataInicial_str & "-" & DataFinal_str
+End If
+
+'Check URL Data
+URL = "https://servicodados.ibge.gov.br/api/v3/agregados" _
+    & "/" & Tabela_str _
+    & "/periodos/" & Periodos_str _
+    & "/variaveis/" & Variavel_str _
+    & "?" _
+    & "localidades=" & lLocalidade_str _
+    & "&classificacao=" & Classificacao_str
+
+'Fetch data webservice
+jsonScript = xlFOCUS_WEBSERVICE(URL)
+result = xlFOCUS_ReadJSON(jsonScript, False, , Array(1, "resultados", 1, "series", 1, "serie"))
+
+xlFOCUS_IBGE_Agregados = sistema_xlFOCUS_IBGE_SIDRA(result, frequenciaStr, Campos, "Data", _
+    DataInicial, DataFinal, _
+    nUltimos, RetornarDatas)
+
+End Function
+
+
+Private Function sistema_xlFOCUS_IBGE_SIDRA(result As Variant, frequenciaStr As String, Campos As Variant, Optional CampoData As String, _
+    Optional DataInicial As Variant = "", Optional DataFinal As Variant = "", _
+    Optional nUltimos As Variant = "", Optional RetornarDatas As Variant = False) As Variant
+
+'Details about the webservice: https://apisidra.ibge.gov.br/
+' https://servicodados.ibge.gov.br/api/docs/agregados?versao=3
+
+Dim nUltimos_str As String, DataInicial_str As String, DataFinal_str As String
+Dim colData As Long, colValor As Long
+Dim iObs As Long
+Dim datesVector() As Long, seqDates() As Variant
+Dim minDateIdx As Long, maxDateIdx As Long
+Dim dateAux As String
+Dim allPeriods As Long
+Dim nCols As Long
+Dim listMatches As Variant
+Dim colNIVNOME As Long, colTERCODIGO As Long
+Dim oldDates As Boolean
+Dim resultAux As Variant
+Dim nDim As Long
+
+' Avoid recalculation when the function wizard is being used
+If (Not Application.CommandBars("Standard").Controls(1).Enabled) And recalculateWhenFunctionWizardIsOpen = False Then
+    sistema_xlFOCUS_IBGE_SIDRA = "# Barra de fórmulas aberta"
+    Exit Function
+End If
+
+DataInicial_str = Format(DataInicial, "dd/MM/yyyy")
+DataFinal_str = Format(DataFinal, "dd/MM/yyyy")
+nUltimos_str = CStr(nUltimos)
+
+'If Not (LenB(DataInicial) = 0 And LenB(DataFinal) = 0) Then
+'    If LenB(DataInicial) = 0 Then
+'        result = "# Data inicial ausente"
+'        GoTo Final
+'    End If
+'    If LenB(DataFinal) = 0 Then
+'        result = "# Data final ausente"
+'        GoTo Final
+'    End If
+'End If
+
+'If LenB(DataInicial) <> 0 And LenB(DataFinal) <> 0 Then
+'    URL = URL & "&dataInicial=" & DataInicial_str & "&dataFinal=" & DataFinal_str
+'End If
+
+'Check returned values
+If VarType(result) = vbString Then
+    GoTo Final
+End If
+
+'Fix for the case of a single observation
+If UBound(result, 1) - LBound(result, 1) = 0 Then
+    resultAux = result
+    ReDim result(1 To 1, 1 To 2)
+    result(1, 1) = resultAux(LBound(resultAux, 1), LBound(resultAux, 2))
+    result(1, 2) = resultAux(LBound(resultAux, 1), UBound(resultAux, 2))
+Else
+    result = Application.Index(result, 0, 0)
+End If
+
+'Format values
+colData = -1
+On Error Resume Next
+colData = colData + 1 + Application.WorksheetFunction.Match(CampoData, Campos, 0)
+On Error GoTo 0
+colValor = Application.WorksheetFunction.Match("V", Campos, 0)
+
+If colData > -1 Then
+    ReDim Preserve datesVector(LBound(result, 1) To UBound(result, 1))
+    For iObs = LBound(result, 1) To UBound(result, 1)
+        dateAux = Left$(result(iObs, colData), 10)
+        
+        'Format date
+        Select Case frequenciaStr
+            Case "trimestral"
+                datesVector(iObs) = DateSerial(CLng(Left$(dateAux, 4)), (CLng(Right$(dateAux, 2)) - 1) * 3 + 1, 1)
+            Case "anual"
+                datesVector(iObs) = DateSerial(CLng(dateAux), 1, 1)
+            Case Else
+                datesVector(iObs) = CLng(DateValue(dateAux))
+        End Select
+        
+    Next iObs
+End If
+
+'Slice dates
+If Len(DataInicial_str) = 0 Then
+    minDateIdx = 1
+ElseIf datesVector(1) >= DateValue(DataInicial_str) Then
+    minDateIdx = 1
+Else
+    minDateIdx = Application.WorksheetFunction.Match(CLng(DateValue(DataInicial_str)), datesVector, 1)
+    If CLng(DateValue(DataInicial_str)) > datesVector(minDateIdx) Then
+        minDateIdx = minDateIdx + 1
+    End If
+End If
+If Len(DataFinal_str) = 0 Then
+    maxDateIdx = UBound(datesVector)
+ElseIf datesVector(UBound(datesVector)) <= CLng(DateValue(DataFinal_str)) Then
+    maxDateIdx = UBound(datesVector)
+Else
+    maxDateIdx = Application.WorksheetFunction.Match(CLng(DateValue(DataFinal_str)), datesVector, 1)
+End If
+seqDates = Application.WorksheetFunction.Sequence(maxDateIdx - minDateIdx + 1, 1, minDateIdx)
+
+'Define return table format
+If IsMissing(RetornarDatas) Then
+    'Only values
+    nCols = 1
+    colData = -1
+    result = Application.Index(result, seqDates, colValor)
+    colValor = 1
+ElseIf RetornarDatas = False Then
+    'Only values
+    nCols = 1
+    colData = -1
+    result = Application.Index(result, seqDates, colValor)
+    colValor = 1
+ElseIf RetornarDatas = True Then
+    'Only dates
+    nCols = 1
+    result = Application.Index(result, seqDates, colData)
+    colValor = 1
+ElseIf RetornarDatas = 2 Then
+    'Dates and values
+    nCols = 2
+    'No need to change (but array must start at 1)
+    
+    'Check whether is a single observation
+    If UBound(result, 1) - LBound(result, 1) <> 0 Then
+        result = Application.Index(result, seqDates, Array(colData, colValor))
+    End If
+    colData = 1
+    colValor = 2
+Else
+    result = "# RetornarDatas é inválido"
+    GoTo Final
+End If
+
+'Slice periods
+If Len(nUltimos_str) > 0 Then
+    allPeriods = UBound(result, 1) - LBound(result, 1) + 1
+    
+    If CLng(nUltimos) > allPeriods Then nUltimos = allPeriods
+    
+    'Check whether is a single observation
+    If UBound(result, 1) - LBound(result, 1) <> 0 Then
+        result = Application.Index(result, _
+            Application.WorksheetFunction.Sequence(CLng(nUltimos), 1, allPeriods - CLng(nUltimos) + 1, 1), _
+            Application.WorksheetFunction.Sequence(1, nCols, 1, 1))
+    End If
+End If
+
+'Get dimensions
+nDim = getDimension(result)
+
+'Format dates
+oldDates = False
+If colData > 0 Then
+    For iObs = 1 To UBound(result, 1)
+        If nDim = 2 Then
+            dateAux = result(iObs, colData)
+        Else
+            dateAux = result(iObs)
+        End If
+        'Check whether dates are older than Excel's first date
+        
+        'Format date
+        Select Case frequenciaStr
+            Case "trimestral"
+                dateAux = DateSerial(CLng(Left$(dateAux, 4)), (CLng(Right$(dateAux, 2)) - 1) * 3 + 1, 1)
+            Case "anual"
+                dateAux = DateSerial(CLng(dateAux), 1, 1)
+            Case Else
+                dateAux = CLng(DateValue(dateAux))
+        End Select
+        
+        If oldDates = False And DateValue(dateAux) > DateValue("1900-01-01") Then
+            dateAux = DateValue(dateAux)
+        Else
+            oldDates = True
+        End If
+        
+        If nDim = 2 Then
+            result(iObs, colData) = dateAux
+        Else
+            result(iObs) = dateAux
+        End If
+        
+    Next iObs
+End If
+
+'Format values
+If colValor > 0 And RetornarDatas <> True Then
+    If nDim = 2 Then
+        For iObs = 1 To UBound(result, 1)
+            result(iObs, colValor) = CDbl(result(iObs, colValor))
+        Next iObs
+    Else
+        For iObs = 1 To UBound(result, 1)
+            result(iObs) = CDbl(result(iObs))
+        Next iObs
+    End If
+End If
+
+
+Final:
+
+sistema_xlFOCUS_IBGE_SIDRA = result
+    
+End Function
+
+''''''''''''''''''''''''''''''''''''''
+''''''''''''''''''''' OTHER FUNCTIONS'
+''''''''''''''''''''''''''''''''''''''
+
+Private Function getDimension(var As Variant) As Long
+' https://stackoverflow.com/questions/6901991/how-to-return-the-number-of-dimensions-of-a-variant-variable-passed-to-it-in-v
+
+On Error GoTo Err
+Dim i As Long
+Dim tmp As Long
+i = 0
+Do While True
+    i = i + 1
+    tmp = UBound(var, i)
+Loop
+
+Err:
+getDimension = i - 1
 
 End Function

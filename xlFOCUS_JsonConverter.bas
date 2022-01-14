@@ -2,8 +2,8 @@ Attribute VB_Name = "xlFOCUS_JsonConverter"
 ''' xlFOCUS
 ''' https://github.com/edugca/xlFOCUS
 '''
-''' Version: 0.41
-''' Last update: 2021-01-01
+''' Version: 0.5
+''' Last update: 2021-01-13
 ''' This module was slightly modfied by Eduardo G. C. Amaral, so as to force late binding to the library "Microsoft Scripting Runtime"
 '''
 ''
