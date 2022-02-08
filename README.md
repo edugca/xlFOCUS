@@ -6,7 +6,7 @@ It is totally free and its code is open!
 																		
 ## **TIPS**																		
 																		
-* Most recent version should be found on the webpage below:																		
+* Most recent version should be found on this webpage:																		
 https://github.com/edugca/xlFOCUS																		
 																		
 * To update from a previous version, just replace the old version of this spreadsheet with this one.
