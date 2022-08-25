@@ -1,4 +1,4 @@
-# **xlFOCUS (v. 0.5)**																		
+# **xlFOCUS (v. 0.6)**																		
 																		
 This spreadsheet exposes examples of how to fetch Brazil economic data from webservices to Excel, including FOCUS (market expectations); SGS, ipeadata, and IBGE (economic indicators); SCR (credit data); SPI (payments system); and more.																		
 It is intended to be used by researchers and the general public. It is NOT a product of the Brazilian Central Bank nor of any other government institution. Use at your own risk!																		
@@ -103,4 +103,9 @@ v 0.5 (2022-01-13)
 
 * Functions xlFOCUS_ReadJSON and xlFOCUS_ReadJSONFile have got a new optional parameter called "subfield". It allows to climb down 1 step in the JSON structure before building the returned table. Previously, these functions automatically descended the field "value" as this is the case of scripts returned by the BCB's webservices, but not of IBGE's webservice, for example, which now xlFOCUS is also compatible with. In reason of that, calls to old versions of these functions must now make explicit reference to the "value" argument in the subField parameter. Check the examples available in this spreadsheet in case of doubt.
 * New functions to get time series data from the IBGE webservices: xlFOCUS_IBGE_Agregados and xlFOCUS_IBGE_SIDRA.													
-* Minor fixes to function xlFOCUS_SGS													
+* Minor fixes to function xlFOCUS_SGS.
+
+v 0.6 (2022-08-25)
+
+* New function to extract the nth element of a vector: xlFOCUS_INDEX. It allows negative positions, which are counted from the last element to the first one.
+* New function xlFOCUS_ExpectativasMercadoSelic for fetching Selic forecasts for specific Copom meetings.														

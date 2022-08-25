@@ -8,12 +8,12 @@ Attribute VB_Name = "xlFOCUS"
 '''
 ''' Available on:
 ''' Developed by Eduardo G. C. Amaral
-''' Version: 0.5
-''' Last update: 2022-01-13
+''' Version: 0.6
+''' Last update: 2022-08-25
 '''
 ''' It is intended to help researchers and the general public, so have fun, but use at your own risk!
 '''
-''' Copyright (c) 2021, Eduardo G. C. Amaral
+''' Copyright (c) 2022, Eduardo G. C. Amaral
 ''' All rights reserved.
 '''
 ''' Redistribution and use in source and binary forms, with or without
@@ -465,6 +465,7 @@ End Function
 
 Private Function xlFOCUS_CheckArguments(Optional ByRef Indicador As String, Optional ByRef IndicadorDetalhe As String, _
     Optional ByRef DataReferencia As Variant, _
+    Optional ByRef Reuniao As Variant, _
     Optional ByRef DataInicial As Variant, _
     Optional ByRef DataFinal As Variant, _
     Optional ByRef baseCalculo As String, _
@@ -478,6 +479,7 @@ Dim result As String
 
 'Force range to value or array
 DataReferencia = DataReferencia
+Reuniao = Reuniao
 DataInicial = DataInicial
 DataFinal = DataFinal
 Instituicao = Instituicao
@@ -519,6 +521,7 @@ Dim tipoCalculo As String
 Dim Suavizada As String
 Dim Instituicao As String
 Dim Periodicidade As String
+Dim Reuniao As String
 
 ' Avoid recalculation when the function wizard is being used
 If (Not Application.CommandBars("Standard").Controls(1).Enabled) And recalculateWhenFunctionWizardIsOpen = False Then
@@ -530,7 +533,7 @@ Sistema = "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata
 
 DataReferencia = Format(Month(DataReferencia), "00") & "%2F" & Format(Year(DataReferencia), "0000")
 
-xlFOCUS_ExpectativasMensais = sistema_xlFOCUS_Expectativas(Sistema, Indicador, IndicadorDetalhe, DataReferencia, _
+xlFOCUS_ExpectativasMensais = sistema_xlFOCUS_Expectativas(Sistema, Indicador, IndicadorDetalhe, DataReferencia, Reuniao, _
     DataInicial, DataFinal, baseCalculo, tipoCalculo, Suavizada, Instituicao, Periodicidade, Campos)
     
 End Function
@@ -543,6 +546,7 @@ Dim baseCalculo As String
 Dim Suavizada As String
 Dim Instituicao As String
 Dim Periodicidade As String
+Dim Reuniao As String
 
 ' Avoid recalculation when the function wizard is being used
 If (Not Application.CommandBars("Standard").Controls(1).Enabled) And recalculateWhenFunctionWizardIsOpen = False Then
@@ -554,7 +558,7 @@ Sistema = "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata
     
 DataReferencia = Format(Month(DataReferencia), "00") & "%2F" & Format(Year(DataReferencia), "0000")
     
-xlFOCUS_ExpectativasTop5Mensais = sistema_xlFOCUS_Expectativas(Sistema, Indicador, IndicadorDetalhe, DataReferencia, _
+xlFOCUS_ExpectativasTop5Mensais = sistema_xlFOCUS_Expectativas(Sistema, Indicador, IndicadorDetalhe, DataReferencia, Reuniao, _
     DataInicial, DataFinal, baseCalculo, tipoCalculo, Suavizada, Instituicao, Periodicidade, Campos)
 
 End Function
@@ -568,6 +572,7 @@ Dim trimestre As Long
 Dim Suavizada As String
 Dim Instituicao As String
 Dim Periodicidade As String
+Dim Reuniao As String
 
 ' Avoid recalculation when the function wizard is being used
 If (Not Application.CommandBars("Standard").Controls(1).Enabled) And recalculateWhenFunctionWizardIsOpen = False Then
@@ -582,7 +587,7 @@ If IsNumeric(DataReferencia) Or IsDate(DataReferencia) Then
     DataReferencia = Format(trimestre, "0") & "%2F" & Format(Year(DataReferencia), "0000")
 End If
 
-xlFOCUS_ExpectativasTrimestrais = sistema_xlFOCUS_Expectativas(Sistema, Indicador, IndicadorDetalhe, DataReferencia, _
+xlFOCUS_ExpectativasTrimestrais = sistema_xlFOCUS_Expectativas(Sistema, Indicador, IndicadorDetalhe, DataReferencia, Reuniao, _
     DataInicial, DataFinal, baseCalculo, tipoCalculo, Suavizada, Instituicao, Periodicidade, Campos)
     
 End Function
@@ -595,6 +600,7 @@ Dim tipoCalculo As String
 Dim Suavizada As String
 Dim Instituicao As String
 Dim Periodicidade As String
+Dim Reuniao As String
 
 ' Avoid recalculation when the function wizard is being used
 If (Not Application.CommandBars("Standard").Controls(1).Enabled) And recalculateWhenFunctionWizardIsOpen = False Then
@@ -606,7 +612,7 @@ Sistema = "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata
 
 DataReferencia = Format(Year(DataReferencia), "0000")
 
-xlFOCUS_ExpectativasAnuais = sistema_xlFOCUS_Expectativas(Sistema, Indicador, IndicadorDetalhe, DataReferencia, _
+xlFOCUS_ExpectativasAnuais = sistema_xlFOCUS_Expectativas(Sistema, Indicador, IndicadorDetalhe, DataReferencia, Reuniao, _
     DataInicial, DataFinal, baseCalculo, tipoCalculo, Suavizada, Instituicao, Periodicidade, Campos)
 
 End Function
@@ -619,6 +625,7 @@ Dim baseCalculo As String
 Dim Suavizada As String
 Dim Instituicao As String
 Dim Periodicidade As String
+Dim Reuniao As String
 
 ' Avoid recalculation when the function wizard is being used
 If (Not Application.CommandBars("Standard").Controls(1).Enabled) And recalculateWhenFunctionWizardIsOpen = False Then
@@ -630,7 +637,7 @@ Sistema = "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata
 
 DataReferencia = Format(Year(DataReferencia), "0000")
 
-xlFOCUS_ExpectativasTop5Anuais = sistema_xlFOCUS_Expectativas(Sistema, Indicador, IndicadorDetalhe, DataReferencia, _
+xlFOCUS_ExpectativasTop5Anuais = sistema_xlFOCUS_Expectativas(Sistema, Indicador, IndicadorDetalhe, DataReferencia, Reuniao, _
     DataInicial, DataFinal, baseCalculo, tipoCalculo, Suavizada, Instituicao, Periodicidade, Campos)
     
 End Function
@@ -643,6 +650,7 @@ Dim tipoCalculo As String
 Dim DataReferencia As String
 Dim Instituicao As String
 Dim Periodicidade As String
+Dim Reuniao As String
 
 ' Avoid recalculation when the function wizard is being used
 If (Not Application.CommandBars("Standard").Controls(1).Enabled) And recalculateWhenFunctionWizardIsOpen = False Then
@@ -652,7 +660,31 @@ End If
 
 Sistema = "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativasMercadoInflacao12Meses?"
 
-xlFOCUS_Expectativas12Meses = sistema_xlFOCUS_Expectativas(Sistema, Indicador, IndicadorDetalhe, DataReferencia, _
+xlFOCUS_Expectativas12Meses = sistema_xlFOCUS_Expectativas(Sistema, Indicador, IndicadorDetalhe, DataReferencia, Reuniao, _
+    DataInicial, DataFinal, baseCalculo, tipoCalculo, Suavizada, Instituicao, Periodicidade, Campos)
+
+End Function
+
+Function xlFOCUS_ExpectativasMercadoSelic(Indicador As String, Optional Reuniao As String, _
+    Optional DataInicial As Variant, Optional DataFinal As Variant, Optional baseCalculo As String, Optional Campos As Variant) As Variant
+
+Dim Sistema As String
+Dim tipoCalculo As String
+Dim DataReferencia As String
+Dim Instituicao As String
+Dim Periodicidade As String
+Dim IndicadorDetalhe As String
+Dim Suavizada As String
+
+' Avoid recalculation when the function wizard is being used
+If (Not Application.CommandBars("Standard").Controls(1).Enabled) And recalculateWhenFunctionWizardIsOpen = False Then
+    xlFOCUS_ExpectativasMercadoSelic = "# Barra de fórmulas aberta"
+    Exit Function
+End If
+
+Sistema = "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativasMercadoSelic?"
+
+xlFOCUS_ExpectativasMercadoSelic = sistema_xlFOCUS_Expectativas(Sistema, Indicador, IndicadorDetalhe, DataReferencia, Reuniao, _
     DataInicial, DataFinal, baseCalculo, tipoCalculo, Suavizada, Instituicao, Periodicidade, Campos)
 
 End Function
@@ -664,6 +696,7 @@ Dim Sistema As String
 Dim tipoCalculo As String
 Dim baseCalculo As String
 Dim Suavizada As String
+Dim Reuniao As String
 
 ' Avoid recalculation when the function wizard is being used
 If (Not Application.CommandBars("Standard").Controls(1).Enabled) And recalculateWhenFunctionWizardIsOpen = False Then
@@ -673,17 +706,17 @@ End If
 
 Sistema = "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativasMercadoInstituicoes?"
 
-xlFOCUS_ExpectativasInstituicoes = sistema_xlFOCUS_Expectativas(Sistema, Indicador, IndicadorDetalhe, DataReferencia, _
+xlFOCUS_ExpectativasInstituicoes = sistema_xlFOCUS_Expectativas(Sistema, Indicador, IndicadorDetalhe, DataReferencia, Reuniao, _
     DataInicial, DataFinal, baseCalculo, tipoCalculo, Suavizada, Instituicao, Periodicidade, Campos)
 
 End Function
 
-Private Function sistema_xlFOCUS_Expectativas(Sistema As String, Indicador As String, IndicadorDetalhe As String, DataReferencia As Variant, _
+Private Function sistema_xlFOCUS_Expectativas(Sistema As String, Indicador As String, IndicadorDetalhe As String, DataReferencia As Variant, Reuniao As Variant, _
     DataInicial As Variant, DataFinal As Variant, baseCalculo As String, tipoCalculo As String, Suavizada As String, Instituicao As Variant, Periodicidade As String, Campos As Variant) As Variant
 
 Dim URL As String
 Dim jsonScript As String
-Dim Indicador_str As String, IndicadorDetalhe_str As String, DataReferencia_str As String
+Dim Indicador_str As String, IndicadorDetalhe_str As String, DataReferencia_str As String, Reuniao_str As String
 Dim DataInicial_str As String, DataFinal_str As String, baseCalculo_str As String
 Dim tipoCalculo_str As String, Campos_str As String, Suavizada_str As String
 Dim Instituicao_str As String, Periodicidade_str As String
@@ -696,6 +729,7 @@ Dim Passed As String
 Passed = xlFOCUS_CheckArguments(Indicador, _
     IndicadorDetalhe, _
     DataReferencia, _
+    Reuniao, _
     DataInicial, _
     DataFinal, _
     baseCalculo, _
@@ -714,6 +748,7 @@ End If
 Indicador_str = Application.WorksheetFunction.EncodeURL(Indicador)
 IndicadorDetalhe_str = Application.WorksheetFunction.EncodeURL(IndicadorDetalhe)
 DataReferencia_str = CStr(DataReferencia)
+Reuniao_str = CStr(Reuniao)
 DataInicial_str = CStr(DataInicial)
 DataFinal_str = CStr(DataFinal)
 baseCalculo_str = CStr(baseCalculo)
@@ -731,6 +766,7 @@ URL = Sistema _
         & "&$filter=Indicador%20eq%20'" & Indicador_str & "'" _
         & IIf(LenB(IndicadorDetalhe_str) = 0, "", "%20and%20IndicadorDetalhe%20eq%20'" & IndicadorDetalhe_str & "'") _
         & IIf(LenB(DataReferencia_str) = 0, "", "%20and%20DataReferencia%20eq%20'" & DataReferencia_str & "'") _
+        & IIf(LenB(Reuniao_str) = 0, "", "%20and%20Reuniao%20eq%20'" & Reuniao_str & "'") _
         & IIf(LenB(DataInicial_str) = 0, "", "%20and%20Data%20ge%20'" & DataInicial_str & "'") _
         & IIf(LenB(DataFinal_str) = 0, "", "%20and%20Data%20le%20'" & DataFinal_str & "'") _
         & IIf(LenB(baseCalculo_str) = 0, "", "%20and%20baseCalculo%20eq%20" & baseCalculo_str) _
@@ -1848,6 +1884,28 @@ Final:
 sistema_xlFOCUS_IBGE_SIDRA = result
     
 End Function
+
+Function xlFOCUS_INDEX(Values As Variant, Optional Row As Long, Optional Column As Long)
+
+'Force range to be matrix
+Values = Application.Transpose(Application.Transpose(Values))
+
+If Row > 0 Then
+    Row = Row
+ElseIf Row < 0 Then
+    Row = UBound(Values, 1) + Row + 1
+End If
+
+If Column > 0 Then
+    Column = Column
+ElseIf Row < 0 Then
+    Column = UBound(Values, 2) + Column + 1
+End If
+
+xlFOCUS_INDEX = Application.WorksheetFunction.Index(Values, Row, Column)
+
+End Function
+
 
 ''''''''''''''''''''''''''''''''''''''
 ''''''''''''''''''''' OTHER FUNCTIONS'
