@@ -14,8 +14,6 @@ To update in your own spreadsheets, you need to open each one of them in the VBA
 If you are updating from a version older than v. 0.4, you need to also replace the module "JsonConverter" by the current version of the module "xlFOCUS_JsonConverter" also embedded in this spreadsheet.
 If you are updating from a version as old as at least v. 0.4, you need to also replace the module "xlFOCUS_JsonConverter" by its current version also embedded in this spreadsheet.
 																	
-																		
-* To use these functions in your own spreadsheet, use this spreadsheet as a model, it is EASIER!																		
 * To use these functions in your own spreadsheet, use this spreadsheet as a model, it is EASIER!
 Alternatively, copy to your spreadsheet the VBA modules named xlFOCUS and xlFOCUS_JsonConverter, both embedded in this spreadsheet.
 The JsonConverter module is part of the "VBA-JSON" project developed by Tim Hall and available at the website below. The xlFOCUS_JsonConverter module is a slight modification of v2.3.1. so as to simplify its use in this tool.
