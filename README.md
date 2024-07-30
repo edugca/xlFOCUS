@@ -1,5 +1,5 @@
 # **xlFOCUS (v. 0.6)**																		
-<img src="https://github.com/user-attachments/assets/4039bd04-d312-46f3-b0bd-480658f983c5](https://github.com/user-attachments/assets/7da2abdb-b7d4-4f4d-b96b-5ad91b84c140" width=50% height=50%>
+<img src="https://github.com/user-attachments/assets/7da2abdb-b7d4-4f4d-b96b-5ad91b84c140" width=50% height=50%>
 
 This spreadsheet exposes examples of how to fetch Brazil economic data from webservices to Microsoft Excel (Windows only), including FOCUS (market expectations); SGS, ipeadata, and IBGE (economic indicators); SCR (credit data); SPI (payments system); and more.																		
 It is intended to be used by researchers and the general public. It is NOT a product of the Brazilian Central Bank nor of any other government institution. Use at your own risk!																		
